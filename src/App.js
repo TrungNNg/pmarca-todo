@@ -15,6 +15,12 @@ function App() {
   const [watch, setWatch] = useState("");
   const [watchs, setWatchs] = useState([]);
 
+  const [later, setLater] = useState("");
+  const [laters, setLaters] = useState([]);
+
+  const [index, setIndex] = useState([]);
+  const [done, setDone] = useState([]);
+
   //handle todo
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -23,12 +29,14 @@ function App() {
       case "todo":
         setTodos(todos.concat({ id: uuidv4(), type: "todo", title: todo }));
         setTodo("");
-
         break;
       case "watch":
         setWatchs(watchs.concat({ id: uuidv4(), type: "watch", title: watch }));
         setWatch("");
-
+        break;
+      case "later":
+        setLaters(laters.concat({ id: uuidv4(), type: "later", title: later }));
+        setLater("");
         break;
       default:
         console.log("reach switch default");
@@ -43,6 +51,9 @@ function App() {
         break;
       case "watch":
         setWatch(event.target.value);
+        break;
+      case "later":
+        setLater(event.target.value);
         break;
       default:
         console.log("reach switch default");
@@ -61,8 +72,16 @@ function App() {
         return value.id != id;
       });
       setWatchs(filtered);
-    } else {
-      return null;
+    } else if (type === "later") {
+      let filtered = laters.filter(function (value) {
+        return value.id != id;
+      });
+      setLaters(filtered);
+    } else if (type === "index") {
+      let filtered = index.filter(function (value) {
+        return value.id != id;
+      });
+      setIndex(filtered);
     }
   };
 
@@ -71,16 +90,33 @@ function App() {
   // index => anti todo or todo same logic
   // remove from current list the add to new list change the type
   // pass in the map method.
-  const handleMove = (item) => {
-    if (item.type === "watch") {
+  const handleMove = (item, event) => {
+    if (item.type === "watch" || item.type === "later") {
       handleRemove(item.id, item.type);
       item.type = "todo";
       setTodos(todos.concat(item));
       console.log("move to todo from watch");
+    } else if (item.type === "todo") {
+      handleRemove(item.id, item.type);
+      item.type = "index";
+      setIndex(index.concat(item));
+      console.log("move to index from todo");
+    } else if (item.type === "index") {
+      if (event.target.name === "back") {
+        handleRemove(item.id, item.type);
+        item.type = "todo";
+        setTodos(todos.concat(item));
+        console.log("move to todo from index");
+      } else {
+        handleRemove(item.id, item.type);
+        item.type = "done";
+        setDone(done.concat(item));
+        console.log("move to done from index");
+      }
+    } else {
+      return null;
     }
   };
-
-  //handle later task
 
   return (
     <div className="main-container">
@@ -113,9 +149,64 @@ function App() {
           onChange={handleChange}
         />
       </TodoContainer>
-      {console.log(todos)}
+
+      <TodoContainer>
+        <TodoTitle title="Later List" />
+        <TodoList
+          tasks={laters}
+          handleMove={handleMove}
+          handleRemove={handleRemove}
+        />
+        <TodoForm
+          task={later}
+          type="later"
+          onSubmit={handleSubmit}
+          onChange={handleChange}
+        />
+      </TodoContainer>
+
+      <TodoContainer>
+        <TodoTitle title="Index Card" />
+        <IndexCard tasks={index} handleMove={handleMove} />
+      </TodoContainer>
+
+      <TodoContainer>
+        <TodoTitle title="Anti Todo" />
+        <AntiTodo tasks={done} />
+      </TodoContainer>
     </div>
   );
 }
+
+const IndexCard = ({ tasks, handleMove }) => {
+  return (
+    <div className="task-container__items">
+      {(tasks || []).map((item) => {
+        return (
+          <div key={item.id}>
+            <button name="back" onClick={(e) => handleMove(item, e)}>
+              Back
+            </button>
+            {item.title}
+            <button name="done" onClick={(e) => handleMove(item, e)}>
+              Done
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const AntiTodo = ({ tasks }) => {
+  return(
+    <div className="task-container__items">
+    {(tasks || []).map((item) => {
+      return <div key={item.id}>{item.title}</div>;
+    })}
+    <button>Add to Database</button>
+  </div>
+  )
+};
 
 export default App;
