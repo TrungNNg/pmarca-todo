@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {
   TodoContainer,
   TodoForm,
@@ -9,6 +10,7 @@ import {
 } from "./components/Todo";
 
 function App() {
+  const [isLogin, setLogin] = useState(true);
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState([]);
 
@@ -97,6 +99,7 @@ function App() {
       setTodos(todos.concat(item));
       console.log("move to todo from watch");
     } else if (item.type === "todo") {
+      //TODO: check if index.length > 5 show alert if not add
       handleRemove(item.id, item.type);
       item.type = "index";
       setIndex(index.concat(item));
@@ -119,62 +122,103 @@ function App() {
   };
 
   return (
-    <div className="main-container">
-      <TodoContainer>
-        <TodoTitle title="Todo List" />
-        <TodoList
-          tasks={todos}
-          handleMove={handleMove}
-          handleRemove={handleRemove}
-        />
-        <TodoForm
-          task={todo}
-          type="todo"
-          onSubmit={handleSubmit}
-          onChange={handleChange}
-        />
-      </TodoContainer>
+    <Router>
+      <div>
+        <nav className="nav">
+          <div className="nav__link">
+            <Link to="/">Home</Link>
+          </div>
+          <div className="nav__link">
+            <Link to="/about">About</Link>
+          </div>
+          {!isLogin ? (
+            <div className="nav__link">
+              <Link to="/login">Login</Link>
+            </div>
+          ) : (
+            <div className="nav__link">
+              <Link to="/logout">Log-out</Link>
+            </div>
+          )}
+        </nav>
 
-      <TodoContainer>
-        <TodoTitle title="Watch List" />
-        <TodoList
-          tasks={watchs}
-          handleMove={handleMove}
-          handleRemove={handleRemove}
-        />
-        <TodoForm
-          task={watch}
-          type="watch"
-          onSubmit={handleSubmit}
-          onChange={handleChange}
-        />
-      </TodoContainer>
+        <Switch>
+          <Route path="/about">
+            <p>ABOUT</p>
+          </Route>
+          <Route path="/login">
+            <p>LOGIN</p>
+          </Route>
+          <Route path="/logout">
+            <p>LOGOUT</p>
+          </Route>
+          <Route path="/">
+            <>
+              {!isLogin ? (
+                <p>please login</p>
+              ) : (
+                <div className="main-container">
+                  <TodoContainer>
+                    <TodoTitle title="Todo List" />
+                    <TodoList
+                      tasks={todos}
+                      handleMove={handleMove}
+                      handleRemove={handleRemove}
+                    />
+                    <TodoForm
+                      task={todo}
+                      type="todo"
+                      onSubmit={handleSubmit}
+                      onChange={handleChange}
+                    />
+                  </TodoContainer>
 
-      <TodoContainer>
-        <TodoTitle title="Later List" />
-        <TodoList
-          tasks={laters}
-          handleMove={handleMove}
-          handleRemove={handleRemove}
-        />
-        <TodoForm
-          task={later}
-          type="later"
-          onSubmit={handleSubmit}
-          onChange={handleChange}
-        />
-      </TodoContainer>
+                  <TodoContainer>
+                    <TodoTitle title="Watch List" />
+                    <TodoList
+                      tasks={watchs}
+                      handleMove={handleMove}
+                      handleRemove={handleRemove}
+                    />
+                    <TodoForm
+                      task={watch}
+                      type="watch"
+                      onSubmit={handleSubmit}
+                      onChange={handleChange}
+                    />
+                  </TodoContainer>
 
-      <TodoContainer>
-        <TodoTitle title="Index Card" />
-        <IndexCard tasks={index} handleMove={handleMove} />
-      </TodoContainer>
+                  <TodoContainer>
+                    <TodoTitle title="Later List" />
+                    <TodoList
+                      tasks={laters}
+                      handleMove={handleMove}
+                      handleRemove={handleRemove}
+                    />
+                    <TodoForm
+                      task={later}
+                      type="later"
+                      onSubmit={handleSubmit}
+                      onChange={handleChange}
+                    />
+                  </TodoContainer>
 
-      <TodoContainer>
-        <TodoTitle title="Anti Todo" />
-        <AntiTodo tasks={done} />
-      </TodoContainer>
-    </div>
+                  <TodoContainer>
+                    <TodoTitle title="Index Card" />
+                    <IndexCard tasks={index} handleMove={handleMove} />
+                  </TodoContainer>
+
+                  <TodoContainer>
+                    <TodoTitle title="Anti Todo" />
+                    <AntiTodo tasks={done} />
+                  </TodoContainer>
+                </div>
+              )}
+            </>
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
@@ -199,14 +243,14 @@ const IndexCard = ({ tasks, handleMove }) => {
 };
 
 const AntiTodo = ({ tasks }) => {
-  return(
+  return (
     <div className="task-container__items">
-    {(tasks || []).map((item) => {
-      return <div key={item.id}>{item.title}</div>;
-    })}
-    <button>Add to Database</button>
-  </div>
-  )
+      {(tasks || []).map((item) => {
+        return <div key={item.id}>{item.title}</div>;
+      })}
+      <button>Add to Database</button>
+    </div>
+  );
 };
 
 export default App;

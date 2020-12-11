@@ -6,3 +6,8 @@ let create a simple task container first, this container will have
 an input field to get data and put data in an array.
 
 The app component will be the main container that store all the state.
+
+Next day task:
+
+- save to database first 
+- implement auth
