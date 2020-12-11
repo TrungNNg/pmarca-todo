@@ -1,0 +1,15 @@
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    border: 1px green solid;
+}
+
+.task-container {
+    border: 1px red solid;
+}
+
+.task-container__items{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

@@ -1,0 +1,8 @@
+I need a container or a list of task component. there will be 6
+containers and 1 page for note (will need react router for this page)
+there will be login page and a home page to display the product.
+
+let create a simple task container first, this container will have 
+an input field to get data and put data in an array.
+
+The app component will be the main container that store all the state.
