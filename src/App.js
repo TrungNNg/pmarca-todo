@@ -1,64 +1,111 @@
 import React, { useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import "./App.css";
-import _ from 'lodash';
+import {
+  TodoContainer,
+  TodoForm,
+  TodoList,
+  TodoTitle,
+} from "./components/Todo";
 
 function App() {
-  const [todo, setTodo] = useState('');
-  const [tasks, setTasks] = useState([]);
+  const [todo, setTodo] = useState("");
+  const [todos, setTodos] = useState([]);
 
+  const [watch, setWatch] = useState("");
+  const [watchs, setWatchs] = useState([]);
+
+  //handle todo
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    setTasks(tasks.concat({id: uuidv4(), title: todo}))
-    setTodo('')
-    console.log("summited");
+    console.log(event.target.name);
+    switch (event.target.name) {
+      case "todo":
+        setTodos(todos.concat({ id: uuidv4(), type: "todo", title: todo }));
+        setTodo("");
+        console.log("summited todo");
+        break;
+      case "watch":
+        setWatchs(watchs.concat({ id: uuidv4(), type: "watch", title: watch }));
+        setWatch("");
+        console.log("submited watch");
+        break;
+      default:
+        console.log("reach switch default");
+    }
   };
 
   const handleChange = (event) => {
-    setTodo(event.target.value);
+    console.log(event.target.name);
+    switch (event.target.name) {
+      case "todo":
+        setTodo(event.target.value);
+        break;
+      case "watch":
+        setWatch(event.target.value);
+        break;
+      default:
+        console.log("reach switch default");
+    }
   };
 
-  const handleRemove = (id) => {
-    var filtered = tasks.filter(function(value){ 
-      return value.id != id ;
-    });
-    setTasks(filtered);
-  }
+  //give object a type="" to handle 3 cases
+  const handleRemove = (id, type) => {
+    if (type === "todo") {
+      let filtered = todos.filter(function (value) {
+        return value.id != id;
+      });
+      setTodos(filtered);
+    } else if (type === "watch") {
+      let filtered = watchs.filter(function (value) {
+        return value.id != id;
+      });
+      setWatchs(filtered);
+    } else {
+      return null;
+    }
+  };
 
-  const handleMove = (id) => {
+  // use type to know which list this task belong to
+  // Later and Watch will move to todo => index
+  // index => anti todo or todo same logic
+  // remove from current list the add to new list change the type
+  // pass in the map method.
+  const handleMove = (id) => {};
 
-  }
+  //handle later task
 
   return (
     <div className="main-container">
+      <TodoContainer>
+        <TodoTitle title="Todo List" />
+        <TodoList
+          tasks={todos}
+          handleMove={handleMove}
+          handleRemove={handleRemove}
+        />
+        <TodoForm
+          task={todo}
+          type="todo"
+          onSubmit={handleSubmit}
+          onChange={handleChange}
+        />
+      </TodoContainer>
 
-      <div className="task-container">
-      <p className="main-container__p">Todo</p>
-      <div className="task-container__items">
-      {(tasks || []).map((item) => {
-          return <div key={item.id}>
-            <button onClick={() => handleMove(item.id)}>Move</button>
-            {item.title} 
-            <button onClick={() => handleRemove(item.id)}>Remove</button>
-            </div>
-        })}
-      </div>
-
-        <form onSubmit={handleSubmit}>
-          <label>
-            Name:
-            <input
-              type="text"
-              name="name"
-              value={todo}
-              onChange={handleChange}
-            />
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
-      </div>
-
+      <TodoContainer>
+        <TodoTitle title="Watch List" />
+        <TodoList
+          tasks={watchs}
+          handleMove={handleMove}
+          handleRemove={handleRemove}
+        />
+        <TodoForm
+          task={watch}
+          type="watch"
+          onSubmit={handleSubmit}
+          onChange={handleChange}
+        />
+      </TodoContainer>
     </div>
   );
 }
