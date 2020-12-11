@@ -23,12 +23,12 @@ function App() {
       case "todo":
         setTodos(todos.concat({ id: uuidv4(), type: "todo", title: todo }));
         setTodo("");
-        console.log("summited todo");
+
         break;
       case "watch":
         setWatchs(watchs.concat({ id: uuidv4(), type: "watch", title: watch }));
         setWatch("");
-        console.log("submited watch");
+
         break;
       default:
         console.log("reach switch default");
@@ -71,7 +71,14 @@ function App() {
   // index => anti todo or todo same logic
   // remove from current list the add to new list change the type
   // pass in the map method.
-  const handleMove = (id) => {};
+  const handleMove = (item) => {
+    if (item.type === "watch") {
+      handleRemove(item.id, item.type);
+      item.type = "todo";
+      setTodos(todos.concat(item));
+      console.log("move to todo from watch");
+    }
+  };
 
   //handle later task
 
@@ -106,6 +113,7 @@ function App() {
           onChange={handleChange}
         />
       </TodoContainer>
+      {console.log(todos)}
     </div>
   );
 }

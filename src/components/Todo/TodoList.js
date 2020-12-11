@@ -6,7 +6,7 @@ const TodoList = ({ tasks, handleMove, handleRemove }) => {
         {(tasks || []).map((item) => {
           return (
             <div key={item.id}>
-              <button onClick={() => handleMove(item.id)}>Move</button>
+              <button onClick={() => handleMove(item)}>Move</button>
               {item.title}
               <button onClick={() => handleRemove(item.id, item.type)}>Remove</button>
             </div>
